@@ -1,11 +1,24 @@
-import React, { useState } from 'react';
-import { Typography, Link } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { Typography, Link, Button, CircularProgress } from '@material-ui/core';
 import { toFirstCharUppercase } from './constants';
-import mockData from './mockData';
+import axios from 'axios';
 
 const Pokemon = (props) => {
+	const { history } = props;
 	const pokemonId = props.match.params.id;
-	const [pokemon, setPokemon] = useState(mockData[`${pokemonId}`]);
+	const [pokemon, setPokemon] = useState(undefined);
+
+	useEffect(() => {
+		axios
+			.get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`)
+			.then(function (response) {
+				const { data } = response;
+				setPokemon(data);
+			})
+			.catch(function (error) {
+				setPokemon(false);
+			});
+	}, [pokemonId]);
 
 	const generatePokemonJSX = () => {
 		const { name, id, species, height, weight, types, sprites } = pokemon;
@@ -16,9 +29,9 @@ const Pokemon = (props) => {
 			<>
 				<Typography variant="h1">
 					{`${id}.`} {toFirstCharUppercase(name)}
-					<img src={front_default} />
+					<img src={front_default} alt={name}/>
 				</Typography>
-				<img style={{ width: '300px', height: '300px' }} src={fullImageUrl} />
+				<img style={{ width: '300px', height: '300px' }} src={fullImageUrl} alt={name}/>
 				<Typography variant="h3">Pokemon Info</Typography>
 				<Typography>
 					{'Species: '}
@@ -35,7 +48,16 @@ const Pokemon = (props) => {
 		);
 	};
 
-	return <>{generatePokemonJSX()}</>;
+	return (
+		<>
+			{pokemon === undefined && <CircularProgress />}
+			{pokemon !== undefined && pokemon && generatePokemonJSX()}
+			{pokemon === false && <Typography>Pokemon not found</Typography>}
+			{pokemon !== undefined && (
+				<Button variant="contained" color="primary" onClick={() => history.push("/")}> Back to Pokedex</Button>
+			)}
+		</>
+	);
 };
 
 export default Pokemon;

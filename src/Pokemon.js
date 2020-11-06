@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
 	Typography,
-	Link,
 	Button,
 	ButtonGroup,
 	CircularProgress,
@@ -36,7 +35,7 @@ const Pokemon = (props) => {
 	}, [pokemonId]);
 
 	const generatePokemonJSX = () => {
-		const { name, id, species, height, weight, types, sprites } = pokemon;
+		const { name, id, height, weight, types, sprites } = pokemon;
 		const fullImageUrl = `https://pokeres.bastionbot.org/images/pokemon/${id}.png`;
 		const { front_default } = sprites;
 
@@ -52,12 +51,8 @@ const Pokemon = (props) => {
 					alt={name}
 				/>
 				<Typography variant="h3">Pokemon Info</Typography>
-				<Typography>
-					{'Species: '}
-					<Link href={species.url}>{species.name}</Link>
-				</Typography>
-				<Typography>Height: {height}</Typography>
-				<Typography>Weight: {weight}</Typography>
+				<Typography>Height: {height * 10} cm</Typography>
+				<Typography>Weight: {weight / 10} kg</Typography>
 				<Typography variant="h6">Types: </Typography>
 				{types.map((type) => {
 					const { name } = type.type;
@@ -86,9 +81,6 @@ const Pokemon = (props) => {
 
 	return (
 		<>
-			{pokemon === undefined && <CircularProgress />}
-			{pokemon !== undefined && pokemon && generatePokemonJSX()}
-			{pokemon === false && <Typography>Pokemon not found</Typography>}
 			{pokemon !== undefined && (
 				<Button
 					variant="contained"
@@ -100,6 +92,9 @@ const Pokemon = (props) => {
 					Back to Pokedex
 				</Button>
 			)}
+			{pokemon === undefined && <CircularProgress />}
+			{pokemon !== undefined && pokemon && generatePokemonJSX()}
+			{pokemon === false && <Typography>Pokemon not found</Typography>}
 		</>
 	);
 };
